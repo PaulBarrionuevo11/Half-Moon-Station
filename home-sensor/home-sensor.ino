@@ -59,7 +59,16 @@ void logDataToSD(const String &message, float temperature, float humidity, DateT
     Serial.println("Error opening datalog.txt");
   }
 }
-
+// Function to simulate setw
+int formatWithSetWidth(int value, int width=2) { // replace value int for uint8_t for minutes
+  if (value.length() < width) {
+    lcd.print(0);
+    lcd.print(value);
+  } else if (text.length() > width) {
+    lcd.print(now.minute());
+  }
+  return text;
+}
 void setup() {
   // Initialize Serial Monitor
   Serial.begin(115200);
@@ -126,7 +135,8 @@ void loop() {
   lcd.print("Time: ");
   lcd.print(now.hour());
   lcd.print(':');
-  lcd.print(now.minute());
+  formatWithSetWidth(now.minute());
+  //lcd.print(now.minute());
   lcd.print(':');
   lcd.print(now.second());
 
