@@ -1,7 +1,7 @@
 import cv2
 
 # Video capture using OpenCV
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(1)
 # Function to video capture
 def generate_frames():
     while True:

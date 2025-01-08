@@ -1,13 +1,14 @@
 from flask import Flask, jsonify, request, Response, render_template
-import cv2
 from videoStream import generate_frames
 from takePhoto import take_photo
 
 app = Flask(__name__)
-            
+
 @app.route('/')
 def home():
-    return render_template("home.html")
+    from vehicle import Vehicle
+    vehicle1 = Vehicle()
+    return render_template("home.html", vehicle1=vehicle1)
 
 # Extra features
 @app.route('/home')
