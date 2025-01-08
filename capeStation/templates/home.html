@@ -9,6 +9,9 @@
 <body>
     <h1>Welcome to Flask Front-End</h1>
     <p>Select one of the options to navigate the Front-End</p>
+    <p>{{ vehicle1.get_os() }}</p>
+    <p>{{ vehicle1.get_path_dir() }}</p>
+
     <button onclick="videoRoute()">Go To Video Page</button>
     <button onclick="aboutRoute()">About Page</button>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
