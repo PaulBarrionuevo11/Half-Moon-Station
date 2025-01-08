@@ -1,33 +1,19 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <DHT.h>
-#include <DS3231.h>
+LiquidCrystal_I2C lcd(0x27, 20, 4); // 20x4 LCD
+#include "RTClib.h"
+RTC_DS3231 rtc;
+
 #include <SPI.h>
 #include <SD.h>
 
-// DHT Sensor Configuration
-#define DHTPIN 4         // GPIO pin connected to DHT sensor
-#define DHTTYPE DHT22    // DHT sensor type (DHT22)
-
-// LED Configuration
-#define LED_PIN 2        // General status LED
-#define RED_LED 15       // LED for cold temperatures
-#define BLUE_LED 19      // LED for hot temperatures
 
 // SD Card Configuration
-const int chipSelect = 10; // Chip Select pin for SD module
+const int chipSelect = 27; // Chip Select pin for SD module
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-// String messages for temperature ranges
-String dataCold = "Temperature below 17°C";
-String dataHot = "Temperature above 20°C";
-
-// LCD Configuration
-LiquidCrystal_I2C lcd(0x27, 20, 4); // 20x4 LCD
-DHT dht(DHTPIN, DHTTYPE);           // Initialize DHT sensor
-RTClib myRTC;                       // Real-Time Clock (RTC)
-
-// Function to log data to SD card
-void logDataToSD(const String &message, float temperature, float humidity, DateTime now) {
+/******* Function to log data to SD card ******/
+void logDataToSD(const String &message, float temperature, DateTime now) {
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
   if (dataFile) {
@@ -47,9 +33,7 @@ void logDataToSD(const String &message, float temperature, float humidity, DateT
     dataFile.print(message);
     dataFile.print(": Temp = ");
     dataFile.print(temperature);
-    dataFile.print("°C, Humid = ");
-    dataFile.print(humidity);
-    dataFile.println("%");
+
     dataFile.close();
 
     // Log success to Serial Monitor
@@ -60,90 +44,76 @@ void logDataToSD(const String &message, float temperature, float humidity, DateT
   }
 }
 
-void setup() {
-  // Initialize Serial Monitor
-  Serial.begin(115200);
-  Serial.println("DHT sensor with LCD and SD card example");
+void setup () {
+  Serial.begin(57600);
 
-  // Initialize LEDs
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(RED_LED, OUTPUT);
-  pinMode(BLUE_LED, OUTPUT);
+#ifndef ESP8266
+  while (!Serial); // wait for serial port to connect. Needed for native USB
+#endif
 
-  // Initialize DHT sensor
-  dht.begin();
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.flush();
+    while (1) delay(10);
+  }
 
-  // Initialize I2C and LCD
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power, let's set the time!");
+    // When time needs to be set on a new device, or after a power loss, the
+    // following line sets the RTC to the date & time this sketch was compiled
+    //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  }
+
+  // When time needs to be re-set on a previously configured device, the
+  // following line sets the RTC to the date & time this sketch was compiled
+  // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // This line sets the RTC with an explicit date & time, for example to set
+  // January 21, 2014 at 3am you would call:
+  // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   Wire.begin();
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print("Initializing...");
   delay(2000);
+  lcd.clear();
 
-// 
 }
 
-void loop() {
-  // Get current time
-  DateTime now = myRTC.now();
+void loop () {
+    DateTime now = rtc.now();
 
-  // Read temperature and humidity
-  float temperature = dht.readTemperature();    // Celsius
-  float humidity = dht.readHumidity();
+    lcd.setCursor(7, 0);
+    lcd.print(now.hour(), DEC);
+    lcd.print(':');
+    lcd.print(now.minute(), DEC);
+//    lcd.print(':');
+//    lcd.print(now.second(), DEC);
+    lcd.setCursor(0, 1);        
+    lcd.print(daysOfTheWeek[now.dayOfTheWeek()]);
+    
+    lcd.print(' ');
+    lcd.print(now.year(), DEC);
+    lcd.print('/');
+    lcd.print(now.month(), DEC);
+    lcd.print('/');
+    lcd.print(now.day(), DEC);
+//    // calculate a date which is 7 days, 12 hours, 30 minutes, 6 seconds into the future
+//    DateTime future (now + TimeSpan(7,12,30,6));
 
-//  // Check for sensor errors
-//  if (isnan(temperature) || isnan(humidity)) {
-//    Serial.println("Failed to read from DHT sensor!");
-//    lcd.clear();
-//    lcd.setCursor(0, 0);
-//    lcd.print("Sensor Error!");
-//    delay(2000);
-//    return;
-//  }
+    float temperature = rtc.getTemperature();
+    lcd.setCursor(0, 2);
+    lcd.print("Temp: ");
+    lcd.print(temperature);
+    lcd.print(" C");
 
-  // Display values on LCD
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Temp: ");
-  lcd.print(temperature);
-  lcd.print(" C");
-
-  lcd.setCursor(0, 1);
-  lcd.print("Humid: ");
-  lcd.print(humidity);
-  lcd.print(" %");
-
-//  lcd.setCursor(0, 2);
-//  lcd.print("Date: ");
-//  lcd.print(now.year());
-//  lcd.print('/');
-//  lcd.print(now.month());
-//  lcd.print('/');
-//  lcd.print(now.day());
-//
-  lcd.setCursor(0, 2);
-  lcd.print("Time: ");
-  lcd.print(now.hour());
-  lcd.print(':');
-  lcd.print(now.minute());
-  lcd.print(':');
-  lcd.print(now.second());
-
-  // LED indicators and SD card logging
   if (temperature < 17.0) {
-    digitalWrite(RED_LED, HIGH);
-    digitalWrite(BLUE_LED, LOW); // Turn off the other LED
-    logDataToSD(dataCold, temperature, humidity, now);
+    logDataToSD("too cold", temperature, now);
   } else if (temperature > 20.0) {
-    digitalWrite(BLUE_LED, HIGH);
-    digitalWrite(RED_LED, LOW); // Turn off the other LED
-    logDataToSD(dataHot, temperature, humidity, now);
+    logDataToSD("too hot", temperature, now);
   }
-
-//  // Blink status LED
-//  digitalWrite(LED_PIN, HIGH);
-//  delay(500);
-//  digitalWrite(LED_PIN, LOW);
-  delay(1000);
+    delay(23000);
 }
