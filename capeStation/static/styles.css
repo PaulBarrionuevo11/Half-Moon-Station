@@ -27,3 +27,17 @@ button:hover {
     display: inline-block;
     background-color: #f0f0f0; /* Light gray background for aesthetics */
 }
+
+.read-text-margin
+{
+    margin-left: 15px;
+}
+
+/* Styling for the message container */
+.message-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}

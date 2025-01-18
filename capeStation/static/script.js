@@ -3,22 +3,25 @@ function alertMessage()
     alert('Hello from Flask Front-End!');
 }
 
-function videoRoute()
-{
-    window.location.href = '/video/'; 
+function startCameras() {
+    fetch('/start-video', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 function aboutRoute()
 {
     window.location.href = '/about'; 
-}
-
-function startVideo() {
-    const videoFeed = document.getElementById('videoFeed');
-
-    // Set the video feed source to the Flask route
-    videoFeed.src = '/video_feed';
-    videoFeed.autoplay = true;
 }
 
 function startVideo() {
