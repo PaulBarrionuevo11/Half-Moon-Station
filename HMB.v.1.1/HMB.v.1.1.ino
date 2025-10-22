@@ -28,17 +28,26 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 bool wifiStatus = true;
 bool sensorStatus = true;
 
+#include <NTPClient.h>
 #include <WiFi.h>
+#include <WiFiUdp.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 // Wi-Fi credentials
 // Server URL
 const char* ssid = "Dhamma";
 const char* password = "Bonfire2025$$";
-const char* serverUrl = "http://10.0.0.110:5000";
+// const char* serverUrl = "http://10.0.0.110:5000"; //Testing on local server
+
+//NTP Client DateTime
+#define UTC_OFFSET_IN_SECONDS -25200  // offset from greenwich time
+char daysOfWeek[7][12] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "us.pool.ntp.org", UTC_OFFSET_IN_SECONDS, 6000);
+
 
 #include <DHT.h>
-#define DHTPIN 23 // Pin number
+#define DHTPIN 23 // Pin number for temp/hum sensor
 #define DHTTYPE DHT22  
 DHT dht(DHTPIN, DHTTYPE);
 int32_t temp;
@@ -110,6 +119,8 @@ void configureSensor(void)
 
 void setup() {
   Serial.begin(115200);
+  timeClient.begin();
+
   lcd.init();
   lcd.backlight();
   lcd.createChar(0, wifiIcon);
@@ -156,6 +167,16 @@ void setup() {
 }
 
 void loop() {
+
+  // Display DateTime information
+  timeClient.update();
+  Serial.println(daysOfWeek[timeClient.getDay()]);
+  Serial.print(timeClient.getHours());
+  Serial.print(":");
+  Serial.print(timeClient.getMinutes());
+  Serial.print(":");
+  Serial.println(timeClient.getSeconds());
+
   if(wifiStatus == false)
   {
     lcd.setCursor(19,0);
@@ -198,13 +219,12 @@ void loop() {
   /* Get a new sensor event */ 
   sensors_event_t event;
   tsl.getEvent(&event);
- 
-    /* Display the results (light is measured in lux) */
-    if (event.light)
-    {
-      Serial.print(event.light); Serial.println(" lux");
-      delay(2000);
-    }
+  /* Display the results (light is measured in lux) */
+  if (event.light)
+  {
+    Serial.print(event.light); Serial.println(" lux");
+    delay(2000);
+  }
   lcd.setCursor(0, 3);
   lcd.print("Lux:");
   lcd.setCursor(7, 3);
