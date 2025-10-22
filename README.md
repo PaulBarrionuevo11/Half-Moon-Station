@@ -1,28 +1,22 @@
 # Half Moon Station
-Half Moon helps you grow and maintain a thriving garden, wheter its indoor plants or outdoors.
+Half Moon helps you grow and maintain a thriving indoor garden.
 
-Half Moon counts with the neccesary sensors and MCUs to process all the information
-needed to control the environment where your plants live and provide accurate and 
-meaningful feedback to help grow your plants.
+Equipped with sensors for temperature, humidity and luminosity, this home station aims to help everyday people to make better decisions based on the conditions of their house on where to locate their plants and get the best out of them. 
+Future updates include interaction with AI through a mobile app better iteraction and overall experience, 
 
 # Half Moon System
-The Half Moon Station counts with two different systems: 1.Mobile App 2.It's Hardware (Station)
+The Half Moon Station counts with two different systems: 1.Hardware (Station) 2.Backend
 
-## 1.Mobile App
-The mobile app counts with the following functions:
-- SignUp/Login of users
-- Connection with your desire/s station/s.
-- Bidirectional communication between user and station
-- Receive real time updates from your station
-- Suggestions based on learning experiences
-
-## 2. The Hardware (Station)
-The physical hardware has the following functions:
-- Temperature and humidity sensors for realiable monitoring of room/outdoors
+## 1. The Hardware (Station)
+The hardware has the following characteristics:
+- Temperature and humidity sensors for realiable monitoring of rooms
 - Luminosity sensors
-- WIFI connection with HMB database 
-- AI which determines best conditions for your plants
+- WIFI connection to HMB backend 
+- AI which determines best conditions for your plants (future revision)
 
-Planning to have a forum in my X account (still thinking about it) in case someone has questions but the code will be open source at least for v1
+## 2.Backend
+- Receive real time updates from your station
+- Bidirectional communication between user and station
+
 
 
