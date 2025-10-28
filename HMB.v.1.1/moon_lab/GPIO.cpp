@@ -1,31 +1,31 @@
 #include "GPIO.h"
 
-float GPIO::read_pin0(uint32_t pinNumber)
-{
-    pt_gpio_in->pin_0 = PIN_STATE_HIGH;
-}
-float GPIO::read_pin1(uint32_t pinNumber)
-{
-    pt_gpio_in->pin_1 = PIN_STATE_HIGH;
+static volatile GPIO_IO_REG* const GPIO_IN_REG  = reinterpret_cast<volatile GPIO_IO_REG*>(GPIO_IN_REG_ADDR);
+static volatile GPIO_IO_REG* const GPIO_SET_REG = reinterpret_cast<volatile GPIO_IO_REG*>(GPIO_OUT_W1TS_ADDR);
+static volatile GPIO_IO_REG* const GPIO_CLR_REG = reinterpret_cast<volatile GPIO_IO_REG*>(GPIO_OUT_W1TC_ADDR);
 
-}
-float GPIO::read_pin2(uint32_t pinNumber)
-{
-    pt_gpio_in->pin_2 = PIN_STATE_HIGH;
+GPIO::GPIO(uint8_t pin_number) : pin(pin_number) {}
 
-}
-float GPIO::read_pin3(uint32_t pinNumber)
+void GPIO::write_pin(uint8_t state)
 {
-    pt_gpio_in->pin_0 = PIN_STATE_HIGH;
-
+    switch (pin)
+    {
+        case 0: if (state) GPIO_SET_REG->pin_0 = 1; else GPIO_CLR_REG->pin_0 = 1; break;
+        case 1: if (state) GPIO_SET_REG->pin_1 = 1; else GPIO_CLR_REG->pin_1 = 1; break;
+        case 2: if (state) GPIO_SET_REG->pin_2 = 1; else GPIO_CLR_REG->pin_2 = 1; break;
+        // ... add other pins as needed
+        default: break;
+    }
 }
-float GPIO::read_pin4(uint32_t pinNumber)
-{
-    pt_gpio_in->pin_0 = PIN_STATE_HIGH;
 
-}
-float GPIO::read_pin5(uint32_t pinNumber)
+uint8_t GPIO::read_pin()
 {
-    pt_gpio_in->pin_0 = PIN_STATE_HIGH;
-
+    switch (pin)
+    {
+        case 0: return GPIO_IN_REG->pin_0;
+        case 1: return GPIO_IN_REG->pin_1;
+        case 2: return GPIO_IN_REG->pin_2;
+        // ... add other pins as needed
+        default: return 0;
+    }
 }
