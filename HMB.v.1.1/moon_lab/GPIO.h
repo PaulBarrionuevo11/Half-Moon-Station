@@ -13,7 +13,7 @@
 
 #define PIN_STATE_HIGH			(1)
 #define PIN_STATE_LOW			(0)
-
+#define TIME_DELAY				(100000UL)
 
 typedef struct
 {
@@ -65,4 +65,4 @@ class GPIO
 		
 };
 
-#endif 
+#endif // GPIO_H_
