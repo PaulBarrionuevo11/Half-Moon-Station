@@ -1,22 +1,22 @@
 # Half Moon Station
 Half Moon helps you grow and maintain a thriving indoor garden.
 
-Equipped with sensors for temperature, humidity and luminosity, this home station aims to help everyday people to make better decisions based on the conditions of their house on where to locate their plants and get the best out of them. 
-Future updates include interaction with AI through a mobile app better iteraction and overall experience, 
+Equipped with sensors for temperature, humidity and luminosity, this home station aims to make better decisions based on the conditions of the environment. 
+Future updates include interaction with AI through a mobile app. 
 
 # Half Moon System
-The Half Moon Station counts with two different systems: 1.Hardware (Station) 2.Backend
+It counts with two different systems: 1.Hardware (Station) 2.Backend
 
-## 1. The Hardware (Station)
+## 1. Hardware (Station)
 The hardware has the following characteristics:
-- Temperature and humidity sensors for realiable monitoring of rooms
-- Luminosity sensors
-- WIFI connection to HMB backend 
-- AI which determines best conditions for your plants (future revision)
+- Temperature and humidity sensors for realiable monitoring of rooms.
+- Luminosity sensor for real-time light readings.
+- WIFI connection to HMB backend.
+- AI which improves better decision making for your plants (PENDING).
 
 ## 2.Backend
-- Receive real time updates from your station
-- Bidirectional communication between user and station
+- Receive real time updates from the station.
+- Bidirectional communication between user and station.
 
 
 
